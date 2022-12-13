@@ -3,12 +3,9 @@ import { useEffect, useRef } from "react";
 import { BearHeadProps } from "../interfaces/ComponentProps";
 import { getPoses } from "../utils/keypoints";
 
-export function BearHead({
-  videoRef,
-  detectorRef,
-  currentModeRef,
-}: BearHeadProps) {
+export function BearHead({ videoRef, detectorRef }: BearHeadProps) {
   const bearHeadOutput = useRef<HTMLCanvasElement | null>(null);
+  const requestAnimationId = useRef<number | null>(null);
   const tobyHead: HTMLImageElement = (() => {
     const img = new Image();
     img.src = require("../utils/toby.png");
@@ -50,7 +47,7 @@ export function BearHead({
           drawHead(ctx, keypoints);
         });
 
-        if (currentModeRef.current === 0) {
+        if (requestAnimationId.current !== null) {
           requestAnimationFrame(animate);
         }
       };
@@ -79,10 +76,19 @@ export function BearHead({
   };
 
   useEffect(() => {
+    // Initialize requestAnimationId to a negative (invalid) request id. This forces the animation
+    // to loop at least once, but will not loop if the component unmounts (where requestAnimationId
+    // is set to null).
+    requestAnimationId.current = -1;
+
     start();
 
     return () => {
       console.log("Unmounting Bear Head");
+      if (requestAnimationId.current) {
+        cancelAnimationFrame(requestAnimationId.current);
+      }
+      requestAnimationId.current = null;
     };
   });
 

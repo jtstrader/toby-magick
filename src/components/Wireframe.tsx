@@ -1,6 +1,6 @@
-import { Keypoint, Pose } from "@tensorflow-models/pose-detection";
+import { Pose } from "@tensorflow-models/pose-detection";
 import { useEffect, useRef } from "react";
-import { Point, WireframeProps } from "../interfaces/ComponentProps";
+import { WireframeProps } from "../interfaces/ComponentProps";
 import { drawKeypoints, drawSkeleton } from "../utils/drawing";
 import { getPoses } from "../utils/keypoints";
 
@@ -8,9 +8,9 @@ export function Wireframe({
   videoRef,
   detectorRef,
   backgroundRef,
-  currentModeRef,
 }: WireframeProps) {
   const wireframeOutput = useRef<HTMLCanvasElement | null>(null);
+  const requestAnimationId = useRef<number | null>(null);
 
   /**
    * Start the animation frames
@@ -43,14 +43,20 @@ export function Wireframe({
           detectorRef,
           minPoseConfidence
         );
-        ctx.drawImage(videoRef.current!, 0, 0, canvas.width, canvas.height);
+        ctx.drawImage(
+          backgroundRef.current!,
+          0,
+          0,
+          canvas.width,
+          canvas.height
+        );
         poses.forEach(({ keypoints }) => {
           drawSkeleton(ctx, keypoints, minPartConfidence);
           drawKeypoints(ctx, keypoints, minPartConfidence);
         });
 
-        if (currentModeRef.current === 1) {
-          requestAnimationFrame(animate);
+        if (requestAnimationId.current !== null) {
+          requestAnimationId.current = requestAnimationFrame(animate);
         }
       };
 
@@ -59,10 +65,18 @@ export function Wireframe({
   };
 
   useEffect(() => {
+    // Initialize requestAnimationId to a negative (invalid) request id. This forces the animation
+    // to loop at least once, but will not loop if the component unmounts (where requestAnimationId
+    // is set to null).
+    requestAnimationId.current = -1;
     start();
 
     return () => {
       console.log("Unmounting Wireframe");
+      if (requestAnimationId.current) {
+        cancelAnimationFrame(requestAnimationId.current);
+      }
+      requestAnimationId.current = null;
     };
   });
 

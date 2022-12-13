@@ -1,9 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
-import logo from "./logo.svg";
 import "./App.css";
 
 import * as poseDetection from "@tensorflow-models/pose-detection";
-import * as tf from "@tensorflow/tfjs-core";
 import "@tensorflow/tfjs-backend-webgl";
 import { BearHead } from "./components/BearHead";
 import { Wireframe } from "./components/Wireframe";
@@ -15,19 +13,13 @@ function App() {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const detectorRef = useRef<PoseDetector | null>(null);
   const backgroundRef = useRef<HTMLImageElement | null>(null);
-  const currentModeRef = useRef<number>(0);
 
   const modes: JSX.Element[] = [
-    <BearHead
-      videoRef={videoRef}
-      detectorRef={detectorRef}
-      currentModeRef={currentModeRef}
-    />,
+    <BearHead videoRef={videoRef} detectorRef={detectorRef} />,
     <Wireframe
       videoRef={videoRef}
       detectorRef={detectorRef}
       backgroundRef={backgroundRef}
-      currentModeRef={currentModeRef}
     />,
   ];
 
@@ -85,7 +77,6 @@ function App() {
     (async () => {
       await new Promise<void>((resolve) =>
         setTimeout(() => {
-          currentModeRef.current = (mode + 1) % 2;
           setMode((mode + 1) % 2);
           resolve();
         }, MODE_SWITCH_DELAY)
