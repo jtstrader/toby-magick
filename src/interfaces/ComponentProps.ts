@@ -18,6 +18,14 @@ export interface StaticBackgroundVideoComponentProps extends GenericVideoCompone
 }
 
 /**
+ * Props of an ImageMagickOption. Surround with a border when selected by a hand gesture.
+ */
+export interface ImageMagickOptionProps {
+  name: string;
+  border: boolean;
+}
+
+/**
  * A coordinate on a drawable canvas.
  */
 export interface Point {

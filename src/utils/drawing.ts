@@ -67,7 +67,7 @@ const drawHead = (ctx: CanvasRenderingContext2D, nosePoint: Point, distance: num
  * @param radius - The radius of the point to be drawn.
  * @param color - The color of the circle.
  */
-const drawPoint = (
+export const drawPoint = (
   ctx: CanvasRenderingContext2D,
   p: Point,
   radius: number,

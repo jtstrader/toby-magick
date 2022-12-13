@@ -55,6 +55,7 @@ export function Wireframe({
        * Draw the static background image overlayed with the wireframe of the people in front of the camera.
        */
       const animate = async () => {
+        console.log('Wireframe: animation frame started');
         let poses: Pose[] = await getPoses(videoRef, detectorRef, minPoseConfidence);
         ctx.drawImage(backgroundRef.current!, 0, 0, canvas.width, canvas.height);
         poses.forEach(({ keypoints }) => {

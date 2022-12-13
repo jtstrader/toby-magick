@@ -1,0 +1,34 @@
+#image-magick-container {
+  display: flex;
+  flex-direction: row;
+  background: black;
+}
+
+#image-magick-menu-options {
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+}
+
+#image-magick-menu-options header {
+  padding: 20px;
+  font-size: 40px;
+  font-weight: 700;
+  color: orange;
+}
+
+#image-magick-video-container {
+  width: 1280px;
+  height: 1080px;
+  display: flex;
+  align-items: center;
+}
+
+#image-magick-video-output {
+  width: 1280px;
+  height: 720px;
+  background-color: #666;
+}

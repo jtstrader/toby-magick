@@ -27,6 +27,8 @@ export function BearHead({
 }: GenericVideoComponentProps) {
   const bearHeadOutput = useRef<HTMLCanvasElement | null>(null);
   const requestAnimationId = useRef<number | null>(null);
+  const initialTime = useRef<number>(0);
+  const fpsCount = useRef<number>(0);
   const [countdown, setCountdown] = useState<number>(4000);
   const tobyHead: HTMLImageElement = (() => {
     const img = new Image();
@@ -58,6 +60,7 @@ export function BearHead({
        * Draw every frame of the live feed to the screen along with an overlayed bear head.
        */
       const animate = async () => {
+        console.log('Bear Head: animation frame started');
         let poses: Pose[] = await getPoses(videoRef, detectorRef, minPoseConfidence);
         ctx.drawImage(videoRef.current!, 0, 0, canvas.width, canvas.height);
 
@@ -67,6 +70,7 @@ export function BearHead({
 
         setCountdown(magickCheck(poses));
 
+        fpsCount.current += 1;
         if (requestAnimationId.current !== null) {
           requestAnimationFrame(animate);
         }
@@ -86,10 +90,15 @@ export function BearHead({
       defaultRefs();
     }
 
+    initialTime.current = performance.now();
     start();
 
     return () => {
-      console.log('Unmounting Bear Head');
+      console.log(
+        `Unmounting Bear Head. Average FPS: ${Math.floor(
+          fpsCount.current / ((performance.now() - initialTime.current) / 1000)
+        )}`
+      );
       if (requestAnimationId.current) {
         cancelAnimationFrame(requestAnimationId.current);
       }

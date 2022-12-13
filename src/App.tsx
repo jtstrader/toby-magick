@@ -24,7 +24,6 @@ function App() {
    * Enter ImageMagick menu and stop state clock.
    */
   const enterImageMagick = () => {
-    console.log('callback hit');
     // Stop state clock
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
