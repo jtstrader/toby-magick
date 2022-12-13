@@ -31,13 +31,20 @@ export function BearHead({
       ctx.scale(-1, 1);
       ctx.translate(-canvas.width, 0);
 
+      // Confidence scores
+      let minPoseConfidence = 0.15;
+
       var raisedFrameCount = 75;
       var noRaisedFrameCount = 0;
       var magickMode = false;
 
       const animate = async () => {
         console.log("Animating Bear Head");
-        let poses: Pose[] = await getPoses(videoRef, detectorRef);
+        let poses: Pose[] = await getPoses(
+          videoRef,
+          detectorRef,
+          minPoseConfidence
+        );
         ctx.drawImage(videoRef.current!, 0, 0, canvas.width, canvas.height);
         poses.forEach(({ keypoints }) => {
           drawHead(ctx, keypoints);

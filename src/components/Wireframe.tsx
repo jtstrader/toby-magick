@@ -1,6 +1,7 @@
 import { Keypoint, Pose } from "@tensorflow-models/pose-detection";
 import { useEffect, useRef } from "react";
-import { WireframeProps } from "../interfaces/ComponentProps";
+import { Point, WireframeProps } from "../interfaces/ComponentProps";
+import { drawKeypoints, drawSkeleton } from "../utils/drawing";
 import { getPoses } from "../utils/keypoints";
 
 export function Wireframe({
@@ -27,21 +28,26 @@ export function Wireframe({
       ctx.scale(-1, 1);
       ctx.translate(-canvas.width, 0);
 
+      // Confidence scores
+      let minPoseConfidence = 0.15;
+      let minPartConfidence = 0.1;
+
       var raisedFrameCount = 75;
       var noRaisedFrameCount = 0;
       var magickMode = false;
 
       const animate = async () => {
         console.log("Animating Wireframe");
-        let poses: Pose[] = await getPoses(videoRef, detectorRef);
-        ctx.drawImage(
-          backgroundRef.current!,
-          0,
-          0,
-          canvas.width,
-          canvas.height
+        let poses: Pose[] = await getPoses(
+          videoRef,
+          detectorRef,
+          minPoseConfidence
         );
-        poses.forEach(({ keypoints }) => {});
+        ctx.drawImage(videoRef.current!, 0, 0, canvas.width, canvas.height);
+        poses.forEach(({ keypoints }) => {
+          drawSkeleton(ctx, keypoints, minPartConfidence);
+          drawKeypoints(ctx, keypoints, minPartConfidence);
+        });
 
         if (currentModeRef.current === 1) {
           requestAnimationFrame(animate);

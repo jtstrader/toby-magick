@@ -1,5 +1,72 @@
-import { Pose, PoseDetector } from "@tensorflow-models/pose-detection";
+import {
+  Keypoint,
+  Pose,
+  PoseDetector,
+} from "@tensorflow-models/pose-detection";
 import { RefObject } from "react";
+
+const partNames = [
+  "nose",
+  "leftEye",
+  "rightEye",
+  "leftEar",
+  "rightEar",
+  "leftShoulder",
+  "rightShoulder",
+  "leftElbow",
+  "rightElbow",
+  "leftWrist",
+  "rightWrist",
+  "leftHip",
+  "rightHip",
+  "leftKnee",
+  "rightKnee",
+  "leftAnkle",
+  "rightAnkle",
+];
+
+const partIds: Map<string, number> = partNames.reduce((m, n, i) => {
+  m.set(n, i);
+  return m;
+}, new Map());
+
+const connectedPartNames = [
+  ["leftHip", "leftShoulder"],
+  ["leftElbow", "leftShoulder"],
+  ["leftElbow", "leftWrist"],
+  ["leftHip", "leftKnee"],
+  ["leftKnee", "leftAnkle"],
+  ["rightHip", "rightShoulder"],
+  ["rightElbow", "rightShoulder"],
+  ["rightElbow", "rightWrist"],
+  ["rightHip", "rightKnee"],
+  ["rightKnee", "rightAnkle"],
+  ["leftShoulder", "rightShoulder"],
+  ["leftHip", "rightHip"],
+];
+
+const poseChain = [
+  ["nose", "leftEye"],
+  ["leftEye", "leftEar"],
+  ["nose", "rightEye"],
+  ["rightEye", "rightEar"],
+  ["nose", "leftShoulder"],
+  ["leftShoulder", "leftElbow"],
+  ["leftElbow", "leftWrist"],
+  ["leftShoulder", "leftHip"],
+  ["leftHip", "leftKnee"],
+  ["leftKnee", "leftAnkle"],
+  ["nose", "rightShoulder"],
+  ["rightShoulder", "rightElbow"],
+  ["rightElbow", "rightWrist"],
+  ["rightShoulder", "rightHip"],
+  ["rightHip", "rightKnee"],
+  ["rightKnee", "rightAnkle"],
+];
+
+const connectedPartIndices = connectedPartNames.map((e) => {
+  return [partIds.get(e[0])!, partIds.get(e[1])!];
+});
 
 /**
  * Generate a list of poses that pass a given confidence score. Note that multiple poses means multiple people being identified.
@@ -11,7 +78,8 @@ import { RefObject } from "react";
  */
 export async function getPoses(
   videoRef: RefObject<HTMLVideoElement | null>,
-  detectorRef: RefObject<PoseDetector | null>
+  detectorRef: RefObject<PoseDetector | null>,
+  minPoseConfidence: number
 ): Promise<Pose[]> {
   const estimationConfig = {
     maxPoses: 5,
@@ -20,8 +88,6 @@ export async function getPoses(
     nmsRadius: 20,
   };
 
-  let minPoseConfidence = 0.15;
-
   let res = await detectorRef.current?.estimatePoses(
     videoRef.current!,
     estimationConfig
@@ -29,3 +95,32 @@ export async function getPoses(
 
   return !res ? [] : res.filter(({ score }) => score! >= minPoseConfidence);
 }
+
+export const getAdjacentKeyPoints = (
+  keypoints: Keypoint[],
+  minConfidence: number
+): Keypoint[][] => {
+  let adj: Keypoint[][] = [];
+  connectedPartIndices.forEach((n) => {
+    let o = n[0];
+    let i = n[1];
+    if (
+      !eitherPointDoesntMeetConfidence(
+        keypoints[o],
+        keypoints[i],
+        minConfidence
+      )
+    ) {
+      adj.push([keypoints[o], keypoints[i]]);
+    }
+  });
+  return adj;
+};
+
+const eitherPointDoesntMeetConfidence = (
+  k1: Keypoint,
+  k2: Keypoint,
+  minConfidence: number
+): boolean => {
+  return k1.score! < minConfidence || k2.score! < minConfidence;
+};

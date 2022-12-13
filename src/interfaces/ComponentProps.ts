@@ -13,3 +13,8 @@ export interface WireframeProps {
   backgroundRef: RefObject<HTMLImageElement | null>;
   currentModeRef: RefObject<number>;
 }
+
+export interface Point {
+  x: number;
+  y: number;
+}
