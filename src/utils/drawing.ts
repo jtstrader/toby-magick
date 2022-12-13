@@ -1,6 +1,6 @@
 import { Keypoint } from '@tensorflow-models/pose-detection';
-import { Point } from '../interfaces/ComponentProps';
-import { getAdjacentKeyPoints } from './keypoints';
+import { Point } from '@interfaces/ComponentProps';
+import { getAdjacentKeyPoints } from '@utils/keypoints';
 
 /**
  * Generate a random color and return its hex string.

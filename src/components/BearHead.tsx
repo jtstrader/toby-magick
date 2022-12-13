@@ -1,8 +1,8 @@
 import { Keypoint, Pose } from '@tensorflow-models/pose-detection';
 import { useEffect, useRef } from 'react';
-import { BearHeadProps } from '../interfaces/ComponentProps';
-import { drawBearHead } from '../utils/drawing';
-import { getPoses } from '../utils/keypoints';
+import { BearHeadProps } from '@interfaces/ComponentProps';
+import { drawBearHead } from '@utils/drawing';
+import { getPoses } from '@utils/keypoints';
 
 /**
  * Create a live feed of people getting Toby's head drawn over their faces.
