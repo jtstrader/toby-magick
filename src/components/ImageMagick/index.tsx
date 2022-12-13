@@ -21,7 +21,7 @@ export function ImageMagick({
 
   const viewHeight = 1080;
   const options = ['Negate Image', 'Reverse Image', 'Pad Image', 'Solarize Image'].map((op, i) => (
-    <Option name={op} border={selected === i} />
+    <Option key={i} name={op} border={selected === i} />
   ));
 
   /**

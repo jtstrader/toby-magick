@@ -12,7 +12,7 @@ import {
   magickReset,
   defaultRefs,
   getCountdown,
-} from '@utils/magickTimer';
+} from '@utils/magick-entry-clock';
 
 /**
  * Create a Wireframe of people standing in front of the camera. This component does *not* use live feeds, but a static image obtained on startup.

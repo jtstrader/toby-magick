@@ -1,6 +1,8 @@
 import { Pose } from '@tensorflow-models/pose-detection';
 import { createRef, MutableRefObject } from 'react';
 
+import { log } from '@utils/constants';
+
 /**
  * Initialize refs with default values.
  */
@@ -41,6 +43,10 @@ export const magickReset: MutableRefObject<number | null> = createRef<number>();
  */
 export const magickCheck = (poses: Pose[]): number => {
   if (!magickTime.current || !magickReset.current) {
+    log.error('magickCheck status =>', {
+      magickTime: magickTime.current,
+      magickReset: magickReset.current,
+    });
     return 4000; // invalid configuration, magick counters should be defined
   }
 
@@ -65,6 +71,10 @@ export const magickCheck = (poses: Pose[]): number => {
     if (previousHand.current !== null && magickTime.current !== 4000) {
       magickReset.current -= performance.now() - previousHand.current;
       if (magickReset.current < 0) {
+        // Leave at warn level for debugging purposes, since this should not fire when attempting
+        // to enter ImageMagick mode. Inform user that the clocks are resettings. Are they sure they
+        // meant to do that?
+        log.warn('Resetting magick clock timers');
         magickReset.current = 1500;
         magickTime.current = 4000;
         countdown.current = magickTime.current;

@@ -12,7 +12,7 @@ import {
   getCountdown,
   magickTime,
   magickReset,
-} from '@utils/magickTimer';
+} from '@utils/magick-entry-clock';
 
 /**
  * Create a live feed of people getting Toby's head drawn over their faces.
