@@ -4,10 +4,12 @@ import { RefObject } from "react";
 export interface BearHeadProps {
   videoRef: RefObject<HTMLVideoElement | null>;
   detectorRef: RefObject<PoseDetector | null>;
+  currentModeRef: RefObject<number>;
 }
 
 export interface WireframeProps {
   videoRef: RefObject<HTMLVideoElement | null>;
   detectorRef: RefObject<PoseDetector | null>;
-  src: string;
+  backgroundRef: RefObject<HTMLImageElement | null>;
+  currentModeRef: RefObject<number>;
 }

@@ -1,11 +1,14 @@
-import { POSE_CONNECTIONS } from "@mediapipe/pose";
 import { Keypoint, Pose } from "@tensorflow-models/pose-detection";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { BearHeadProps } from "../interfaces/ComponentProps";
+import { getPoses } from "../utils/keypoints";
 
-export function BearHead({ videoRef, detectorRef }: BearHeadProps) {
-  const output = useRef<HTMLCanvasElement | null>(null);
-  const [background, setBackground] = useState<HTMLImageElement>();
+export function BearHead({
+  videoRef,
+  detectorRef,
+  currentModeRef,
+}: BearHeadProps) {
+  const bearHeadOutput = useRef<HTMLCanvasElement | null>(null);
   const tobyHead: HTMLImageElement = (() => {
     const img = new Image();
     img.src = require("../utils/toby.png");
@@ -16,13 +19,15 @@ export function BearHead({ videoRef, detectorRef }: BearHeadProps) {
    * Start the animation frames
    */
   const start = () => {
-    if (output.current) {
-      let canvas = output.current;
+    if (bearHeadOutput.current) {
+      let canvas = bearHeadOutput.current;
       const ctx = canvas!.getContext("2d")!;
 
+      // TODO: Make configurable
       canvas.width = 1920;
       canvas.height = 1080;
 
+      // Mirror the output image since using a camera looking at us
       ctx.scale(-1, 1);
       ctx.translate(-canvas.width, 0);
 
@@ -31,30 +36,16 @@ export function BearHead({ videoRef, detectorRef }: BearHeadProps) {
       var magickMode = false;
 
       const animate = async () => {
-        const estimationConfig = {
-          maxPoses: 5,
-          flipHorizontal: false,
-          scoreThreshold: 0.5,
-          nmsRadius: 20,
-        };
-
-        let minPoseConfidence = 0.15;
-        let minPartConfidence = 0.1;
-
-        let poses: Pose[] = await detectorRef.current?.estimatePoses(
-          videoRef.current!,
-          estimationConfig
-        )!;
-
+        console.log("Animating Bear Head");
+        let poses: Pose[] = await getPoses(videoRef, detectorRef);
         ctx.drawImage(videoRef.current!, 0, 0, canvas.width, canvas.height);
-
-        poses.forEach(({ score, keypoints }) => {
-          if (score! >= minPoseConfidence && !magickMode) {
-            drawHead(ctx, keypoints);
-          }
+        poses.forEach(({ keypoints }) => {
+          drawHead(ctx, keypoints);
         });
 
-        requestAnimationFrame(animate);
+        if (currentModeRef.current === 0) {
+          requestAnimationFrame(animate);
+        }
       };
 
       animate();
@@ -71,8 +62,6 @@ export function BearHead({ videoRef, detectorRef }: BearHeadProps) {
       Math.pow(eye1x - eye2x, 2) + Math.pow(eye1y - eye2y, 2)
     );
 
-    console.log(tobyHead);
-
     ctx.drawImage(
       tobyHead,
       keypoints[0].x - distance * 1.25,
@@ -84,16 +73,11 @@ export function BearHead({ videoRef, detectorRef }: BearHeadProps) {
 
   useEffect(() => {
     start();
+
+    return () => {
+      console.log("Unmounting Bear Head");
+    };
   });
 
-  return (
-    <>
-      <canvas ref={output} id="video-output"></canvas>
-      <img
-        src={require("../utils/toby.png")}
-        alt="toby head not found!"
-        hidden={true}
-      ></img>
-    </>
-  );
+  return <canvas ref={bearHeadOutput} id="video-output"></canvas>;
 }

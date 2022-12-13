@@ -7,13 +7,29 @@ import * as tf from "@tensorflow/tfjs-core";
 import "@tensorflow/tfjs-backend-webgl";
 import { BearHead } from "./components/BearHead";
 import { Wireframe } from "./components/Wireframe";
-import { detectorConfig } from "./utils/constants";
+import { detectorConfig, MODE_SWITCH_DELAY } from "./utils/constants";
 import { PoseDetector } from "@tensorflow-models/pose-detection";
 
 function App() {
-  const [background, setBackground] = useState<HTMLImageElement | null>(null);
+  const [mode, setMode] = useState(0);
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const detectorRef = useRef<PoseDetector | null>(null);
+  const backgroundRef = useRef<HTMLImageElement | null>(null);
+  const currentModeRef = useRef<number>(0);
+
+  const modes: JSX.Element[] = [
+    <BearHead
+      videoRef={videoRef}
+      detectorRef={detectorRef}
+      currentModeRef={currentModeRef}
+    />,
+    <Wireframe
+      videoRef={videoRef}
+      detectorRef={detectorRef}
+      backgroundRef={backgroundRef}
+      currentModeRef={currentModeRef}
+    />,
+  ];
 
   const getVideo = () => {
     navigator.mediaDevices
@@ -44,14 +60,16 @@ function App() {
       ?.drawImage(videoRef.current!, 0, 0, canvas.width, canvas.height);
     let image = new Image();
     image.src = canvas.toDataURL();
-    setBackground(image);
-    console.log(image);
+    backgroundRef.current = image;
   };
 
+  /**
+   * Initialize video and PoseNet detector references. Video initialization is instant, while PoseNet is
+   * asynchronous. Components should handle `null` detector references while the detector is being created.
+   */
   useEffect(() => {
     getVideo();
 
-    // Initialize pose detector
     (async () => {
       detectorRef.current = await poseDetection.createDetector(
         poseDetection.SupportedModels.PoseNet,
@@ -59,6 +77,21 @@ function App() {
       );
     })();
   }, [videoRef]);
+
+  /**
+   * Change modes with a specified amount of time. Time is set in the constants file.
+   */
+  useEffect(() => {
+    (async () => {
+      await new Promise<void>((resolve) =>
+        setTimeout(() => {
+          currentModeRef.current = (mode + 1) % 2;
+          setMode((mode + 1) % 2);
+          resolve();
+        }, MODE_SWITCH_DELAY)
+      );
+    })();
+  }, [mode]);
 
   return (
     <div className="App">
@@ -69,8 +102,7 @@ function App() {
         width="1920px"
         height="1080px"
       />
-      <BearHead videoRef={videoRef} detectorRef={detectorRef} />
-      {/* <Wireframe ref={videoRef} src={background?.src!} /> */}
+      {modes[mode]}
     </div>
   );
 }
