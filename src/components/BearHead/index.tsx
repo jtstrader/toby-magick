@@ -1,9 +1,10 @@
-import { GenericVideoComponentProps } from '@interfaces/ComponentProps';
+import { GenericVideoComponentProps } from '@interfaces/component-props';
 import { Pose } from '@tensorflow-models/pose-detection';
 import { useEffect, useRef, useState } from 'react';
 
 import { log } from '@utils/constants';
 import { drawBearHead } from '@utils/drawing';
+import { FPSAnalyzer, FPSAnalyzerError } from '@utils/fps';
 import { getPoses } from '@utils/keypoints';
 import {
   formatCountdown,
@@ -28,8 +29,7 @@ export function BearHead({
 }: GenericVideoComponentProps) {
   const bearHeadOutput = useRef<HTMLCanvasElement | null>(null);
   const requestAnimationId = useRef<number | null>(null);
-  const initialTime = useRef<number>(0);
-  const fpsCount = useRef<number>(0);
+  const stats = useRef<FPSAnalyzer>();
   const [countdown, setCountdown] = useState<number>(4000);
   const tobyHead: HTMLImageElement = (() => {
     const img = new Image();
@@ -70,7 +70,17 @@ export function BearHead({
 
         setCountdown(magickCheck(poses));
 
-        fpsCount.current += 1;
+        try {
+          stats.current?.update();
+        } catch (e) {
+          // This could be timing issues with cancelling animations. Ignore this
+          // error if an FPSAnalyzeError for now since base useEffect requires
+          // stats to be initialized.
+          if (!(e instanceof FPSAnalyzerError)) {
+            throw e;
+          }
+        }
+
         if (requestAnimationId.current !== null) {
           requestAnimationFrame(animate);
         }
@@ -90,11 +100,20 @@ export function BearHead({
       defaultRefs();
     }
 
-    initialTime.current = performance.now();
-    start();
+    stats.current = new FPSAnalyzer();
+    stats.current.start(); // start reading FPS
+    start(); // start animation
 
     return () => {
-      log.debug('Unmounting Bear Head');
+      stats.current?.stop();
+      const fpsInfo = stats.current?.getFPSInfo();
+
+      if (!fpsInfo || fpsInfo.framesRead <= 1) {
+        log.debug('Unmountin Bear Head. FPS information could not be read at this time.');
+      } else {
+        log.debug('Unmounting Bear Head. FPS Information: ', fpsInfo);
+      }
+
       if (requestAnimationId.current) {
         cancelAnimationFrame(requestAnimationId.current);
       }

@@ -1,4 +1,4 @@
-import { ImageMagickOptionProps } from '@interfaces/ComponentProps';
+import { ImageMagickOptionProps } from '@interfaces/component-props';
 
 import './index.css';
 

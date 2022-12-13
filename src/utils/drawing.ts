@@ -1,7 +1,14 @@
-import { Point } from '@interfaces/ComponentProps';
 import { Keypoint } from '@tensorflow-models/pose-detection';
 
 import { getAdjacentKeyPoints } from '@utils/keypoints';
+
+/**
+ * A coordinate on a drawable canvas.
+ */
+export interface Point {
+  x: number;
+  y: number;
+}
 
 /**
  * Generate a random color and return its hex string.

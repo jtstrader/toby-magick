@@ -1,11 +1,11 @@
-import { GenericVideoComponentProps, Point } from '@interfaces/ComponentProps';
+import { GenericVideoComponentProps } from '@interfaces/component-props';
 import { Pose } from '@tensorflow-models/pose-detection';
 import { useEffect, useRef, useState } from 'react';
 
 import { Option } from '@components/ImageMagick/Option';
 
 import { log } from '@utils/constants';
-import { drawPoint } from '@utils/drawing';
+import { drawPoint, Point } from '@utils/drawing';
 import { getPoses } from '@utils/keypoints';
 
 import './index.css';

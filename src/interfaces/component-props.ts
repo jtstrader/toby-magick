@@ -24,11 +24,3 @@ export interface ImageMagickOptionProps {
   name: string;
   border: boolean;
 }
-
-/**
- * A coordinate on a drawable canvas.
- */
-export interface Point {
-  x: number;
-  y: number;
-}

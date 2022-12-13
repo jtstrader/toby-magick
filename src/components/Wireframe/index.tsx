@@ -1,9 +1,10 @@
-import { StaticBackgroundVideoComponentProps } from '@interfaces/ComponentProps';
+import { StaticBackgroundVideoComponentProps } from '@interfaces/component-props';
 import { Pose } from '@tensorflow-models/pose-detection';
 import { useEffect, useRef, useState } from 'react';
 
 import { log } from '@utils/constants';
 import { drawKeypoints, drawSkeleton } from '@utils/drawing';
+import { FPSAnalyzer, FPSAnalyzerError } from '@utils/fps';
 import { getPoses } from '@utils/keypoints';
 import {
   formatCountdown,
@@ -29,6 +30,7 @@ export function Wireframe({
 }: StaticBackgroundVideoComponentProps) {
   const wireframeOutput = useRef<HTMLCanvasElement | null>(null);
   const requestAnimationId = useRef<number | null>(null);
+  const stats = useRef<FPSAnalyzer>();
   const [countdown, setCountdown] = useState<number>(4000);
 
   /**
@@ -65,6 +67,17 @@ export function Wireframe({
 
         setCountdown(magickCheck(poses));
 
+        try {
+          stats.current?.update();
+        } catch (e) {
+          // This could be timing issues with cancelling animations. Ignore this
+          // error if an FPSAnalyzeError for now since base useEffect requires
+          // stats to be initialized.
+          if (!(e instanceof FPSAnalyzerError)) {
+            throw e;
+          }
+        }
+
         if (requestAnimationId.current !== null) {
           requestAnimationId.current = requestAnimationFrame(animate);
         }
@@ -83,10 +96,21 @@ export function Wireframe({
     if (magickTime.current === null && magickReset.current === null) {
       defaultRefs();
     }
-    start();
+
+    stats.current = new FPSAnalyzer();
+    stats.current.start(); // start reading FPS
+    start(); // start animation
 
     return () => {
-      log.debug('Unmounting Wireframe');
+      stats.current?.stop();
+      const fpsInfo = stats.current?.getFPSInfo();
+
+      if (!fpsInfo || fpsInfo.framesRead <= 1) {
+        log.debug('Unmountin Wireframe. FPS information could not be read at this time.');
+      } else {
+        log.debug('Unmounting Wireframe. FPS Information: ', fpsInfo);
+      }
+
       if (requestAnimationId.current) {
         cancelAnimationFrame(requestAnimationId.current);
       }
