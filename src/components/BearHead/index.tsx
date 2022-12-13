@@ -61,9 +61,9 @@ export function BearHead({
        * Draw every frame of the live feed to the screen along with an overlayed bear head.
        */
       const animate = async () => {
-        let poses: Pose[] = await getPoses(videoRef, detectorRef, minPoseConfidence);
         ctx.drawImage(videoRef.current!, 0, 0, canvas.width, canvas.height);
-
+        
+        let poses: Pose[] = await getPoses(videoRef, detectorRef, minPoseConfidence);
         poses.forEach(({ keypoints }) => {
           drawBearHead(ctx, keypoints, tobyHead);
         });

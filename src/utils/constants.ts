@@ -1,13 +1,13 @@
-import { PosenetModelConfig } from '@tensorflow-models/pose-detection';
+import { MoveNetModelConfig } from '@tensorflow-models/pose-detection';
+import * as poseDetection from '@tensorflow-models/pose-detection';
 import { Logger } from 'tslog';
 
 // TODO: Consider removing this from constants and allowing things such as resolution, architecture, etc. to be configurable
 export const detectorConfig = {
-  architecture: 'MobileNetV1',
-  outputStride: 16,
-  inputResolution: { width: 800, height: 600 },
-  multiplier: 0.75,
-} as PosenetModelConfig;
+  modelType: poseDetection.movenet.modelType.MULTIPOSE_LIGHTNING,
+  enableTracking: true,
+  trackerType: poseDetection.TrackerType.BoundingBox
+} as MoveNetModelConfig;
 
 /**
  * The time to switch between `Bear Head` and `Wireframe` modes in milliseconds.

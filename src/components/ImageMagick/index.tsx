@@ -60,13 +60,11 @@ export function ImageMagick({
        * Draw every frame of the live feed to the screen along with an overlayed bear head.
        */
       const animate = async () => {
-        // console.log('ImageMagick: animation frame starting');
-        let poses: Pose[] = await getPoses(videoRef, detectorRef, minPoseConfidence);
         ctx.drawImage(videoRef.current!, 0, 0, canvas.width, canvas.height);
-
+        
+        let poses: Pose[] = await getPoses(videoRef, detectorRef, minPoseConfidence);
         poses.forEach(({ keypoints }) => {
           // Right wrist keypoint index = 10
-
           const p: Point = keypoints[10];
           drawPoint(ctx, p, 10);
         });

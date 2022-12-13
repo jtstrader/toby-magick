@@ -100,7 +100,7 @@ function App() {
 
     (async () => {
       detectorRef.current = await poseDetection.createDetector(
-        poseDetection.SupportedModels.PoseNet,
+        poseDetection.SupportedModels.MoveNet,
         detectorConfig
       );
     })();
