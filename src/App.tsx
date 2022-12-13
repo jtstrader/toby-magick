@@ -7,7 +7,7 @@ import { BearHead } from '@components/BearHead';
 import { ImageMagick } from '@components/ImageMagick';
 import { Wireframe } from '@components/Wireframe';
 
-import { detectorConfig, MODE_SWITCH_DELAY } from '@utils/constants';
+import { detectorConfig, log, MODE_SWITCH_DELAY } from '@utils/constants';
 
 import './App.css';
 
@@ -111,7 +111,6 @@ function App() {
    */
   useEffect(() => {
     if (mode !== 2 && timeoutRef.current !== null && clockStart) {
-      console.log('creating new clock');
       (async () => {
         await new Promise<void>((resolve) => {
           timeoutRef.current = setTimeout(() => {
@@ -125,7 +124,7 @@ function App() {
 
   useEffect(() => {
     if (timeoutRef.current === null) {
-      console.log('Creating first go around');
+      log.debug('Starting first clock');
       (async () => {
         await new Promise<void>((resolve) => {
           timeoutRef.current = setTimeout(() => {

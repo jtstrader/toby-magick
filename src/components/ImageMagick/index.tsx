@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 
 import { Option } from '@components/ImageMagick/Option';
 
+import { log } from '@utils/constants';
 import { drawPoint } from '@utils/drawing';
 import { getPoses } from '@utils/keypoints';
 
@@ -40,8 +41,7 @@ export function ImageMagick({
    */
   const start = () => {
     if (imageMagickOutput.current) {
-      console.log('Animating Image Magick');
-      console.log(ranges);
+      log.debug('Animating Image Magick With Ranges: ', ranges);
       let canvas = imageMagickOutput.current;
       const ctx = canvas!.getContext('2d')!;
 
@@ -100,7 +100,7 @@ export function ImageMagick({
     start();
 
     return () => {
-      console.log('Unmounting Bear Head');
+      log.debug('Unmounting Bear Head');
       if (requestAnimationId.current) {
         cancelAnimationFrame(requestAnimationId.current);
       }

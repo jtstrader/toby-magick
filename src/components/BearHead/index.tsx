@@ -2,6 +2,7 @@ import { GenericVideoComponentProps } from '@interfaces/ComponentProps';
 import { Pose } from '@tensorflow-models/pose-detection';
 import { useEffect, useRef, useState } from 'react';
 
+import { log } from '@utils/constants';
 import { drawBearHead } from '@utils/drawing';
 import { getPoses } from '@utils/keypoints';
 import {
@@ -41,7 +42,7 @@ export function BearHead({
    */
   const start = () => {
     if (bearHeadOutput.current) {
-      console.log('Animating Bear Head');
+      log.debug('Animating Bear Head');
       let canvas = bearHeadOutput.current;
       const ctx = canvas!.getContext('2d')!;
 
@@ -60,7 +61,6 @@ export function BearHead({
        * Draw every frame of the live feed to the screen along with an overlayed bear head.
        */
       const animate = async () => {
-        console.log('Bear Head: animation frame started');
         let poses: Pose[] = await getPoses(videoRef, detectorRef, minPoseConfidence);
         ctx.drawImage(videoRef.current!, 0, 0, canvas.width, canvas.height);
 
@@ -94,11 +94,7 @@ export function BearHead({
     start();
 
     return () => {
-      console.log(
-        `Unmounting Bear Head. Average FPS: ${Math.floor(
-          fpsCount.current / ((performance.now() - initialTime.current) / 1000)
-        )}`
-      );
+      log.debug('Unmounting Bear Head');
       if (requestAnimationId.current) {
         cancelAnimationFrame(requestAnimationId.current);
       }

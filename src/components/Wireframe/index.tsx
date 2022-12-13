@@ -2,6 +2,7 @@ import { StaticBackgroundVideoComponentProps } from '@interfaces/ComponentProps'
 import { Pose } from '@tensorflow-models/pose-detection';
 import { useEffect, useRef, useState } from 'react';
 
+import { log } from '@utils/constants';
 import { drawKeypoints, drawSkeleton } from '@utils/drawing';
 import { getPoses } from '@utils/keypoints';
 import {
@@ -35,7 +36,7 @@ export function Wireframe({
    */
   const start = () => {
     if (wireframeOutput.current) {
-      console.log('Animating Wireframe');
+      log.debug('Animating Wireframe');
       let canvas = wireframeOutput.current;
       const ctx = canvas!.getContext('2d')!;
 
@@ -55,7 +56,6 @@ export function Wireframe({
        * Draw the static background image overlayed with the wireframe of the people in front of the camera.
        */
       const animate = async () => {
-        console.log('Wireframe: animation frame started');
         let poses: Pose[] = await getPoses(videoRef, detectorRef, minPoseConfidence);
         ctx.drawImage(backgroundRef.current!, 0, 0, canvas.width, canvas.height);
         poses.forEach(({ keypoints }) => {
@@ -86,7 +86,7 @@ export function Wireframe({
     start();
 
     return () => {
-      console.log('Unmounting Wireframe');
+      log.debug('Unmounting Wireframe');
       if (requestAnimationId.current) {
         cancelAnimationFrame(requestAnimationId.current);
       }
