@@ -1,8 +1,17 @@
-import { Keypoint, Pose } from '@tensorflow-models/pose-detection';
-import { useEffect, useRef } from 'react';
-import { BearHeadProps } from '@interfaces/ComponentProps';
+import { GenericVideoComponentProps } from '@interfaces/ComponentProps';
+import { Pose } from '@tensorflow-models/pose-detection';
+import { useEffect, useRef, useState } from 'react';
+
 import { drawBearHead } from '@utils/drawing';
 import { getPoses } from '@utils/keypoints';
+import {
+  formatCountdown,
+  magickCheck,
+  defaultRefs,
+  getCountdown,
+  magickTime,
+  magickReset,
+} from '@utils/magickTimer';
 
 /**
  * Create a live feed of people getting Toby's head drawn over their faces.
@@ -11,12 +20,17 @@ import { getPoses } from '@utils/keypoints';
  *
  * @returns A JSX.Element containing a canvas that is updated through `requestAnimationFrame` calls to draw a bear head over someone's face.
  */
-export function BearHead({ videoRef, detectorRef }: BearHeadProps) {
+export function BearHead({
+  videoRef,
+  detectorRef,
+  handleMagickSwitch,
+}: GenericVideoComponentProps) {
   const bearHeadOutput = useRef<HTMLCanvasElement | null>(null);
   const requestAnimationId = useRef<number | null>(null);
+  const [countdown, setCountdown] = useState<number>(4000);
   const tobyHead: HTMLImageElement = (() => {
     const img = new Image();
-    img.src = require('../utils/toby.png');
+    img.src = require('@utils/toby.png');
     return img;
   })();
 
@@ -25,6 +39,7 @@ export function BearHead({ videoRef, detectorRef }: BearHeadProps) {
    */
   const start = () => {
     if (bearHeadOutput.current) {
+      console.log('Animating Bear Head');
       let canvas = bearHeadOutput.current;
       const ctx = canvas!.getContext('2d')!;
 
@@ -39,22 +54,18 @@ export function BearHead({ videoRef, detectorRef }: BearHeadProps) {
       // Confidence scores
       let minPoseConfidence = 0.15;
 
-      var raisedFrameCount = 75;
-      var noRaisedFrameCount = 0;
-      var magickMode = false;
-
       /**
        * Draw every frame of the live feed to the screen along with an overlayed bear head.
        */
       const animate = async () => {
-        console.log('Animating Bear Head');
         let poses: Pose[] = await getPoses(videoRef, detectorRef, minPoseConfidence);
         ctx.drawImage(videoRef.current!, 0, 0, canvas.width, canvas.height);
+
         poses.forEach(({ keypoints }) => {
-          if (keypoints[0].score! >= minPoseConfidence) {
-            drawBearHead(ctx, keypoints, tobyHead);
-          }
+          drawBearHead(ctx, keypoints, tobyHead);
         });
+
+        setCountdown(magickCheck(poses));
 
         if (requestAnimationId.current !== null) {
           requestAnimationFrame(animate);
@@ -70,6 +81,10 @@ export function BearHead({ videoRef, detectorRef }: BearHeadProps) {
     // to loop at least once, but will not loop if the component unmounts (where requestAnimationId
     // is set to null).
     requestAnimationId.current = -1;
+    setCountdown(getCountdown());
+    if (magickTime.current === null && magickReset.current === null) {
+      defaultRefs();
+    }
 
     start();
 
@@ -80,7 +95,24 @@ export function BearHead({ videoRef, detectorRef }: BearHeadProps) {
       }
       requestAnimationId.current = null;
     };
-  });
+  }, []);
 
-  return <canvas ref={bearHeadOutput} id="video-output"></canvas>;
+  /**
+   * Enter ImageMagick.
+   */
+  useEffect(() => {
+    if (countdown <= 0) {
+      defaultRefs();
+      handleMagickSwitch();
+    }
+  }, [handleMagickSwitch, countdown]);
+
+  return (
+    <div>
+      <div className="image-magick-notif" hidden={countdown === 4000}>
+        {formatCountdown()}
+      </div>
+      <canvas ref={bearHeadOutput} id="video-output"></canvas>
+    </div>
+  );
 }

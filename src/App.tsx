@@ -1,12 +1,15 @@
-import React, { useEffect, useRef, useState } from 'react';
-import './App.css';
-
 import * as poseDetection from '@tensorflow-models/pose-detection';
-import '@tensorflow/tfjs-backend-webgl';
-import { BearHead } from './components/BearHead';
-import { Wireframe } from './components/Wireframe';
-import { detectorConfig, MODE_SWITCH_DELAY } from './utils/constants';
 import { PoseDetector } from '@tensorflow-models/pose-detection';
+import '@tensorflow/tfjs-backend-webgl';
+import { useEffect, useRef, useState } from 'react';
+
+import { BearHead } from '@components/BearHead';
+import { ImageMagick } from '@components/ImageMagick';
+import { Wireframe } from '@components/Wireframe';
+
+import { detectorConfig, MODE_SWITCH_DELAY } from '@utils/constants';
+
+import './App.css';
 
 function App() {
   const [mode, setMode] = useState(0);
@@ -15,10 +18,43 @@ function App() {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const detectorRef = useRef<PoseDetector | null>(null);
   const backgroundRef = useRef<HTMLImageElement | null>(null);
+  const timeoutRef = useRef<NodeJS.Timeout>();
+
+  /**
+   * Enter ImageMagick menu and stop state clock.
+   */
+  const enterImageMagick = () => {
+    console.log('callback hit');
+    // Stop state clock
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+
+    setMode(2); // ImageMagick mode
+  };
+
+  /**
+   * Exit ImageMagick menu and start state clock.
+   */
+  const exitImageMagick = () => setMode(0);
 
   const modes: JSX.Element[] = [
-    <BearHead videoRef={videoRef} detectorRef={detectorRef} />,
-    <Wireframe videoRef={videoRef} detectorRef={detectorRef} backgroundRef={backgroundRef} />,
+    <BearHead
+      videoRef={videoRef}
+      detectorRef={detectorRef}
+      handleMagickSwitch={enterImageMagick}
+    />,
+    <Wireframe
+      videoRef={videoRef}
+      detectorRef={detectorRef}
+      backgroundRef={backgroundRef}
+      handleMagickSwitch={enterImageMagick}
+    />,
+    <ImageMagick
+      videoRef={videoRef}
+      detectorRef={detectorRef}
+      handleMagickSwitch={exitImageMagick}
+    />,
   ];
 
   /**
@@ -74,14 +110,16 @@ function App() {
    * Change modes with a specified amount of time. Time is set in the constants file.
    */
   useEffect(() => {
-    (async () => {
-      await new Promise<void>((resolve) =>
-        setTimeout(() => {
-          setMode((mode + 1) % 2);
-          resolve();
-        }, MODE_SWITCH_DELAY)
-      );
-    })();
+    if (mode !== 2) {
+      (async () => {
+        await new Promise<void>((resolve) => {
+          timeoutRef.current = setTimeout(() => {
+            setMode((mode + 1) % 2);
+            resolve();
+          }, MODE_SWITCH_DELAY);
+        });
+      })();
+    }
   }, [mode]);
 
   return (

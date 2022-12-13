@@ -2,19 +2,18 @@ import { PoseDetector } from '@tensorflow-models/pose-detection';
 import { RefObject } from 'react';
 
 /**
- * Props of the BearHead component.
+ * Props of a generic view that requires a video feed and detector.
  */
-export interface BearHeadProps {
+export interface GenericVideoComponentProps {
   videoRef: RefObject<HTMLVideoElement | null>;
   detectorRef: RefObject<PoseDetector | null>;
+  handleMagickSwitch: () => void;
 }
 
 /**
- * Props of the Wireframe component. Requires a `backgroundRef` since it overlays a static image.
+ * Props of a specific view that requiers what a generic view does, but also a `backgroundRef` since it overlays a static image.
  */
-export interface WireframeProps {
-  videoRef: RefObject<HTMLVideoElement | null>;
-  detectorRef: RefObject<PoseDetector | null>;
+export interface StaticBackgroundVideoComponentProps extends GenericVideoComponentProps {
   backgroundRef: RefObject<HTMLImageElement | null>;
 }
 

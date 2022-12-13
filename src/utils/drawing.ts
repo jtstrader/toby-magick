@@ -1,5 +1,6 @@
-import { Keypoint } from '@tensorflow-models/pose-detection';
 import { Point } from '@interfaces/ComponentProps';
+import { Keypoint } from '@tensorflow-models/pose-detection';
+
 import { getAdjacentKeyPoints } from '@utils/keypoints';
 
 /**
@@ -233,7 +234,7 @@ export const drawSkeleton = (
   let color: string;
 
   // Both hands raised
-  if (keypoints[10].y < keypoints[6].y) {
+  if (keypoints[10].y < keypoints[6].y && keypoints[9].y < keypoints[5].y) {
     color = getRandomColor();
   }
 
