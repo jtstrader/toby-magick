@@ -14,11 +14,12 @@ import './App.css';
 function App() {
   const [mode, setMode] = useState(0);
   const [ready, setReady] = useState(false); // determines when the application can be shown
+  const [clockStart, setClockStart] = useState(false); // determines when the clock can be started
 
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const detectorRef = useRef<PoseDetector | null>(null);
   const backgroundRef = useRef<HTMLImageElement | null>(null);
-  const timeoutRef = useRef<NodeJS.Timeout>();
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   /**
    * Enter ImageMagick menu and stop state clock.
@@ -109,7 +110,8 @@ function App() {
    * Change modes with a specified amount of time. Time is set in the constants file.
    */
   useEffect(() => {
-    if (mode !== 2) {
+    if (mode !== 2 && timeoutRef.current !== null && clockStart) {
+      console.log('creating new clock');
       (async () => {
         await new Promise<void>((resolve) => {
           timeoutRef.current = setTimeout(() => {
@@ -119,7 +121,22 @@ function App() {
         });
       })();
     }
-  }, [mode]);
+  }, [mode, clockStart]);
+
+  useEffect(() => {
+    if (timeoutRef.current === null) {
+      console.log('Creating first go around');
+      (async () => {
+        await new Promise<void>((resolve) => {
+          timeoutRef.current = setTimeout(() => {
+            setMode((mode + 1) % 2);
+            setClockStart(true);
+            resolve();
+          }, MODE_SWITCH_DELAY);
+        });
+      })();
+    }
+  }, []);
 
   return (
     <div className="App">
