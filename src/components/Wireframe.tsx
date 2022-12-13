@@ -1,24 +1,27 @@
-import { Pose } from "@tensorflow-models/pose-detection";
-import { useEffect, useRef } from "react";
-import { WireframeProps } from "../interfaces/ComponentProps";
-import { drawKeypoints, drawSkeleton } from "../utils/drawing";
-import { getPoses } from "../utils/keypoints";
+import { Pose } from '@tensorflow-models/pose-detection';
+import { useEffect, useRef } from 'react';
+import { WireframeProps } from '../interfaces/ComponentProps';
+import { drawKeypoints, drawSkeleton } from '../utils/drawing';
+import { getPoses } from '../utils/keypoints';
 
-export function Wireframe({
-  videoRef,
-  detectorRef,
-  backgroundRef,
-}: WireframeProps) {
+/**
+ * Create a Wireframe of people standing in front of the camera. This component does *not* use live feeds, but a static image obtained on startup.
+ *
+ * @param WireframeProps - A valid WireframeProps instance with a videoRef, detectorRef, and backgroundRef. All three can be null, but must be initialized in order for a valid wireframe to be generated.
+ *
+ * @returns A JSX.Element containing a canvas that is updated through `requestAnimationFrame` calls to draw a wireframe to the screen over a static image of the background.
+ */
+export function Wireframe({ videoRef, detectorRef, backgroundRef }: WireframeProps) {
   const wireframeOutput = useRef<HTMLCanvasElement | null>(null);
   const requestAnimationId = useRef<number | null>(null);
 
   /**
-   * Start the animation frames
+   * Start the animation frames. Current request IDs are tracked by `requestAnimationId`.
    */
   const start = () => {
     if (wireframeOutput.current) {
       let canvas = wireframeOutput.current;
-      const ctx = canvas!.getContext("2d")!;
+      const ctx = canvas!.getContext('2d')!;
 
       // TODO: Make configurable
       canvas.width = 1920;
@@ -36,20 +39,13 @@ export function Wireframe({
       var noRaisedFrameCount = 0;
       var magickMode = false;
 
+      /**
+       * Draw the static background image overlayed with the wireframe of the people in front of the camera.
+       */
       const animate = async () => {
-        console.log("Animating Wireframe");
-        let poses: Pose[] = await getPoses(
-          videoRef,
-          detectorRef,
-          minPoseConfidence
-        );
-        ctx.drawImage(
-          backgroundRef.current!,
-          0,
-          0,
-          canvas.width,
-          canvas.height
-        );
+        console.log('Animating Wireframe');
+        let poses: Pose[] = await getPoses(videoRef, detectorRef, minPoseConfidence);
+        ctx.drawImage(backgroundRef.current!, 0, 0, canvas.width, canvas.height);
         poses.forEach(({ keypoints }) => {
           drawSkeleton(ctx, keypoints, minPartConfidence);
           drawKeypoints(ctx, keypoints, minPartConfidence);
@@ -72,7 +68,7 @@ export function Wireframe({
     start();
 
     return () => {
-      console.log("Unmounting Wireframe");
+      console.log('Unmounting Wireframe');
       if (requestAnimationId.current) {
         cancelAnimationFrame(requestAnimationId.current);
       }

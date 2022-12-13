@@ -1,28 +1,29 @@
-import React, { useEffect, useRef, useState } from "react";
-import "./App.css";
+import React, { useEffect, useRef, useState } from 'react';
+import './App.css';
 
-import * as poseDetection from "@tensorflow-models/pose-detection";
-import "@tensorflow/tfjs-backend-webgl";
-import { BearHead } from "./components/BearHead";
-import { Wireframe } from "./components/Wireframe";
-import { detectorConfig, MODE_SWITCH_DELAY } from "./utils/constants";
-import { PoseDetector } from "@tensorflow-models/pose-detection";
+import * as poseDetection from '@tensorflow-models/pose-detection';
+import '@tensorflow/tfjs-backend-webgl';
+import { BearHead } from './components/BearHead';
+import { Wireframe } from './components/Wireframe';
+import { detectorConfig, MODE_SWITCH_DELAY } from './utils/constants';
+import { PoseDetector } from '@tensorflow-models/pose-detection';
 
 function App() {
   const [mode, setMode] = useState(0);
+  const [ready, setReady] = useState(false); // determines when the application can be shown
+
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const detectorRef = useRef<PoseDetector | null>(null);
   const backgroundRef = useRef<HTMLImageElement | null>(null);
 
   const modes: JSX.Element[] = [
     <BearHead videoRef={videoRef} detectorRef={detectorRef} />,
-    <Wireframe
-      videoRef={videoRef}
-      detectorRef={detectorRef}
-      backgroundRef={backgroundRef}
-    />,
+    <Wireframe videoRef={videoRef} detectorRef={detectorRef} backgroundRef={backgroundRef} />,
   ];
 
+  /**
+   * Obtain a video stream and set the videoRef pointer to the stream from the camera.
+   */
   const getVideo = () => {
     navigator.mediaDevices
       .getUserMedia({
@@ -40,19 +41,18 @@ function App() {
       });
   };
 
-  // Get intitial state of room for wireframe component,
-  // since that draws a frame over a static image, not a
-  // live video feed.
+  /**
+   *  Get intitial state of room for wireframe component, since that draws a frame over a static image, not a live video feed.
+   */
   const getInitialImage = () => {
-    let canvas = document.createElement("canvas");
+    let canvas = document.createElement('canvas');
     canvas.width = 1920;
     canvas.height = 1080;
-    canvas
-      .getContext("2d")
-      ?.drawImage(videoRef.current!, 0, 0, canvas.width, canvas.height);
+    canvas.getContext('2d')?.drawImage(videoRef.current!, 0, 0, canvas.width, canvas.height);
     let image = new Image();
     image.src = canvas.toDataURL();
     backgroundRef.current = image;
+    setReady(true);
   };
 
   /**
@@ -93,7 +93,7 @@ function App() {
         width="1920px"
         height="1080px"
       />
-      {modes[mode]}
+      {ready && modes[mode]}
     </div>
   );
 }
