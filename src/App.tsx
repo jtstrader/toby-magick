@@ -7,7 +7,7 @@ import { BearHead } from '@components/BearHead';
 import { ImageMagick } from '@components/ImageMagick';
 import { Wireframe } from '@components/Wireframe';
 
-import { detectorConfig, log, MODE_SWITCH_DELAY } from '@utils/constants';
+import { log, MODE_SWITCH_DELAY, MODEL_CONFIG } from '@utils/constants';
 
 import './App.css';
 
@@ -97,13 +97,6 @@ function App() {
    */
   useEffect(() => {
     getVideo();
-
-    (async () => {
-      detectorRef.current = await poseDetection.createDetector(
-        poseDetection.SupportedModels.MoveNet,
-        detectorConfig
-      );
-    })();
   }, [videoRef]);
 
   /**
@@ -125,6 +118,15 @@ function App() {
   useEffect(() => {
     if (timeoutRef.current === null) {
       log.debug('Starting first clock');
+      log.info('Loaded with the following model configuration: ', MODEL_CONFIG!);
+
+      (async () => {
+        detectorRef.current = await poseDetection.createDetector(
+          MODEL_CONFIG.model,
+          MODEL_CONFIG.detectorConfig
+        );
+      })();
+
       (async () => {
         await new Promise<void>((resolve) => {
           timeoutRef.current = setTimeout(() => {

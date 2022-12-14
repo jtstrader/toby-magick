@@ -2,10 +2,10 @@ import { ImageMagickOptionProps } from '@interfaces/component-props';
 
 import './index.css';
 
-export function Option({ name, border }: ImageMagickOptionProps) {
+export function Option({ displayName, flag, border }: ImageMagickOptionProps) {
   return (
     <div className="magick-option" style={{ borderStyle: border ? 'solid' : 'hidden' }}>
-      {name}
+      {displayName}
     </div>
   );
 }

@@ -6,14 +6,5 @@ module.exports = {
       '@utils': path.resolve(__dirname, 'src/utils'),
       '@interfaces': path.resolve(__dirname, 'src/interfaces'),
     },
-    configure: {
-      devtool: "eval",
-      optimization: {
-        runtimeChunk: true,
-        removeAvailableModules: false,
-        removeEmptyChunks: false,
-        splitChunks: false,
-      }
-    }
   },
 };

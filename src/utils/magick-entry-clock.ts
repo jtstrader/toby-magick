@@ -47,6 +47,8 @@ export const magickCheck = (poses: Pose[]): number => {
       magickTime: magickTime.current,
       magickReset: magickReset.current,
     });
+    magickTime.current = 4000;
+    magickReset.current = 1500;
     return 4000; // invalid configuration, magick counters should be defined
   }
 

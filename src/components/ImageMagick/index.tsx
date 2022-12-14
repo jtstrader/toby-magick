@@ -1,5 +1,6 @@
 import { GenericVideoComponentProps } from '@interfaces/component-props';
 import { Pose } from '@tensorflow-models/pose-detection';
+import { info } from 'console';
 import { useEffect, useRef, useState } from 'react';
 
 import { Option } from '@components/ImageMagick/Option';
@@ -9,6 +10,7 @@ import { drawPoint, Point } from '@utils/drawing';
 import { getPoses } from '@utils/keypoints';
 
 import './index.css';
+import { getOptionStrings, OptionString } from './options';
 
 export function ImageMagick({
   videoRef,
@@ -18,23 +20,19 @@ export function ImageMagick({
   const imageMagickOutput = useRef<HTMLCanvasElement | null>(null);
   const requestAnimationId = useRef<number | null>(null);
   const [selected, setSelected] = useState<number>(0);
+  const [options, setOptions] = useState<OptionString[]>([]);
+  const [optionComponents, setOptionComponents] = useState<JSX.Element[]>([]);
 
+  const numOptions = 4;
   const viewHeight = 1080;
-  const options = ['Negate Image', 'Reverse Image', 'Pad Image', 'Solarize Image'].map((op, i) => (
-    <Option key={i} name={op} border={selected === i} />
-  ));
 
-  /**
-   * Generate a list of ranges that a right hand could fall under
-   * to select an option.
-   */
-  const ranges: number[] = ((): number[] => {
+  const ranges = ((len: number): number[] => {
     let ranges = [];
-    for (let i = 1; i < options.length + 1; i++) {
-      ranges.push((i * viewHeight) / options.length);
+    for (let i = 1; i < len + 1; i++) {
+      ranges.push((i * viewHeight) / len);
     }
     return ranges;
-  })();
+  })(numOptions);
 
   /**
    * Start the animation frames
@@ -60,9 +58,8 @@ export function ImageMagick({
        * Draw every frame of the live feed to the screen along with an overlayed bear head.
        */
       const animate = async () => {
-        ctx.drawImage(videoRef.current!, 0, 0, canvas.width, canvas.height);
-        
         let poses: Pose[] = await getPoses(videoRef, detectorRef, minPoseConfidence);
+        ctx.drawImage(videoRef.current!, 0, 0, canvas.width, canvas.height);
         poses.forEach(({ keypoints }) => {
           // Right wrist keypoint index = 10
           const p: Point = keypoints[10];
@@ -72,7 +69,7 @@ export function ImageMagick({
         if (poses.length > 0) {
           let y = poses[0].keypoints[10].y;
 
-          for (let i = 0; i < options.length; i++) {
+          for (let i = 0; i < ranges.length; i++) {
             if (y < ranges[i]) {
               setSelected(i);
               break;
@@ -89,16 +86,31 @@ export function ImageMagick({
     }
   };
 
+  /**
+   * Update components if a new selection is found.
+   */
+  useEffect(() => {
+    setOptionComponents(
+      options.map(({ displayName, flag }, i) => {
+        return <Option key={i} displayName={displayName} flag={flag} border={selected === i} />;
+      })
+    );
+  }, [options, selected]);
+
   useEffect(() => {
     // Initialize requestAnimationId to a negative (invalid) request id. This forces the animation
     // to loop at least once, but will not loop if the component unmounts (where requestAnimationId
     // is set to null).
     requestAnimationId.current = -1;
 
+    if (options.length === 0) {
+      setOptions(getOptionStrings(numOptions));
+    }
+
     start();
 
     return () => {
-      log.debug('Unmounting Bear Head');
+      log.debug('Unmounting ImageMagick');
       if (requestAnimationId.current) {
         cancelAnimationFrame(requestAnimationId.current);
       }
@@ -113,7 +125,7 @@ export function ImageMagick({
       </div>
       <div id="image-magick-menu-options">
         <header>ImageMagick Menu</header>
-        {options}
+        {optionComponents}
       </div>
     </div>
   );

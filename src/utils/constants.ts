@@ -1,13 +1,14 @@
-import { MoveNetModelConfig } from '@tensorflow-models/pose-detection';
-import * as poseDetection from '@tensorflow-models/pose-detection';
+import {
+  MoveNetModelConfig,
+  PosenetModelConfig,
+  TrackerType,
+  movenet,
+  SupportedModels,
+  ModelConfig,
+} from '@tensorflow-models/pose-detection';
 import { Logger } from 'tslog';
 
 // TODO: Consider removing this from constants and allowing things such as resolution, architecture, etc. to be configurable
-export const detectorConfig = {
-  modelType: poseDetection.movenet.modelType.MULTIPOSE_LIGHTNING,
-  enableTracking: true,
-  trackerType: poseDetection.TrackerType.BoundingBox
-} as MoveNetModelConfig;
 
 /**
  * The time to switch between `Bear Head` and `Wireframe` modes in milliseconds.
@@ -44,3 +45,32 @@ export const log = new Logger({
   },
   name: 'TobyMagickLogger',
 });
+
+interface EnvModelConfig {
+  model: SupportedModels;
+  detectorConfig: ModelConfig;
+}
+
+export const MODEL_CONFIG: EnvModelConfig = (() => {
+  const modelName = process.env.REACT_APP_MODEL;
+  if (modelName === 'PoseNet') {
+    return {
+      model: SupportedModels.PoseNet,
+      detectorConfig: {
+        architecture: 'MobileNetV1',
+        outputStride: 16,
+        inputResolution: { width: 800, height: 600 },
+        multiplier: 0.75,
+      } as PosenetModelConfig,
+    };
+  } else {
+    return {
+      model: SupportedModels.MoveNet,
+      detectorConfig: {
+        modelType: movenet.modelType.MULTIPOSE_LIGHTNING,
+        enableTracking: true,
+        trackerType: TrackerType.BoundingBox,
+      } as MoveNetModelConfig,
+    };
+  }
+})();
