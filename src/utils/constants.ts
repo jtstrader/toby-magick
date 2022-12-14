@@ -46,11 +46,18 @@ export const log = new Logger({
   name: 'TobyMagickLogger',
 });
 
+/**
+ * Represents the current model configuration built from the .env file. Default model is MoveNet.
+ */
 interface EnvModelConfig {
   model: SupportedModels;
   detectorConfig: ModelConfig;
+  default?: boolean;
 }
 
+/**
+ * The model configuration built from the .env file. Defaults to MoveNet.
+ */
 export const MODEL_CONFIG: EnvModelConfig = (() => {
   const modelName = process.env.REACT_APP_MODEL;
   if (modelName === 'PoseNet') {
@@ -71,6 +78,7 @@ export const MODEL_CONFIG: EnvModelConfig = (() => {
         enableTracking: true,
         trackerType: TrackerType.BoundingBox,
       } as MoveNetModelConfig,
+      default: true,
     };
   }
 })();

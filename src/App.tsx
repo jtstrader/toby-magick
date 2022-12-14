@@ -1,6 +1,7 @@
 import * as poseDetection from '@tensorflow-models/pose-detection';
 import { PoseDetector } from '@tensorflow-models/pose-detection';
 import '@tensorflow/tfjs-backend-webgl';
+import { ModelStoreManagerRegistry } from '@tensorflow/tfjs-core/dist/io/model_management';
 import { useEffect, useRef, useState } from 'react';
 
 import { BearHead } from '@components/BearHead';
@@ -118,6 +119,11 @@ function App() {
   useEffect(() => {
     if (timeoutRef.current === null) {
       log.debug('Starting first clock');
+
+      if (MODEL_CONFIG.default) {
+        log.error('No valid model provided in .env. Defaulting to MoveNet');
+      }
+
       log.info('Loaded with the following model configuration: ', MODEL_CONFIG!);
 
       (async () => {

@@ -1,6 +1,5 @@
 import { GenericVideoComponentProps } from '@interfaces/component-props';
 import { Pose } from '@tensorflow-models/pose-detection';
-import { info } from 'console';
 import { useEffect, useRef, useState } from 'react';
 
 import { Option } from '@components/ImageMagick/Option';
