@@ -1,7 +1,6 @@
 import * as poseDetection from '@tensorflow-models/pose-detection';
 import { PoseDetector } from '@tensorflow-models/pose-detection';
 import '@tensorflow/tfjs-backend-webgl';
-import { ModelStoreManagerRegistry } from '@tensorflow/tfjs-core/dist/io/model_management';
 import { useEffect, useRef, useState } from 'react';
 
 import { BearHead } from '@components/BearHead';
