@@ -27,8 +27,8 @@ export interface ImageMagickRequest {
  * The expected response for an ImageMagick request.
  */
 export interface ImageMagickResponse {
-    /**
-     * The image source data in base64.
-     */
-    img: string
+  /**
+   * The image source data in base64.
+   */
+  img: string;
 }

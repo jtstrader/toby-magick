@@ -14,17 +14,17 @@ export const optionStrings: OptionString[] = [
   {
     displayName: 'Rotationally Blur Image',
     cmd: '-rotational-blur',
-    cfg: 5
+    cfg: 5,
   },
   {
     displayName: 'Segment Image',
     cmd: '-segment',
-    cfg: 5
+    cfg: 5,
   },
   {
     displayName: 'Sepia-Tone Image',
     cmd: '-sepia-tone',
-    cfg: '75%'
+    cfg: '75%',
   },
 ];
 

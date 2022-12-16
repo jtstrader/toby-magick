@@ -22,7 +22,7 @@ export function ImageMagick({
   const imageMagickSnapshotOutput = useRef<HTMLCanvasElement | null>(null);
   const requestAnimationId = useRef<number | null>(null);
   const snapshotMode = useRef<boolean>(false);
-  
+
   const [selected, setSelected] = useState<number>(0);
   const [options, setOptions] = useState<OptionString[]>([]);
   const [optionComponents, setOptionComponents] = useState<JSX.Element[]>([]);
@@ -67,7 +67,7 @@ export function ImageMagick({
       const animate = async () => {
         let poses: Pose[] = await getPoses(videoRef, detectorRef, minPoseConfidence);
         ctx.drawImage(videoRef.current!, 0, 0, canvas.width, canvas.height);
-        
+
         if (!snapshotMode.current) {
           poses.forEach(({ keypoints }) => {
             // Right wrist keypoint index = 10
@@ -87,7 +87,7 @@ export function ImageMagick({
           }
 
           setCountdown(magickCheck(poses, false));
-        } 
+        }
 
         if (requestAnimationId.current !== null) {
           requestAnimationId.current = requestAnimationFrame(animate);
@@ -121,7 +121,6 @@ export function ImageMagick({
       setOptions(getOptionStrings(numOptions));
     }
 
-
     start();
 
     return () => {
@@ -142,15 +141,15 @@ export function ImageMagick({
       defaultRefs();
       setSnapshotState(true);
       setCountdown(6000);
-    } 
+    }
   }, [countdown]);
-  
+
   /**
    * Take a snapshot
-  */
- useEffect(() => {
-   if (snapshotState) {
-      snapshotMode.current = true; // turn off detection of right hand 
+   */
+  useEffect(() => {
+    if (snapshotState) {
+      snapshotMode.current = true; // turn off detection of right hand
       (async () => {
         for (let time = 5000; time >= 0; time -= 1000) {
           setCountdown(time);
@@ -160,8 +159,8 @@ export function ImageMagick({
         await takeSnapshot();
       })();
     }
-  }, [snapshotState])
-  
+  }, [snapshotState]);
+
   /**
    * Return to menu after snapshot has been loaded
    */
@@ -172,11 +171,11 @@ export function ImageMagick({
           setCountdown(time);
           await new Promise<void>((resolve) => setTimeout(resolve, 1000));
         }
-  
+
         handleMagickSwitch();
-      })()
+      })();
     }
-  }, [magicked])
+  }, [magicked]);
 
   const takeSnapshot = async () => {
     if (imageMagickSnapshotOutput.current) {
@@ -195,7 +194,7 @@ export function ImageMagick({
       const res = await getConvertedImage(base64, options[selected]);
       let i = new Image();
       i.src = `data:image/png;base64,${res.img}`;
-      
+
       // When image is ready, draw it!
       i.onload = () => {
         let canvas = imageMagickSnapshotOutput.current!;

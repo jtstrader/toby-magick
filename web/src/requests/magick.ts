@@ -1,9 +1,13 @@
-import { OptionString } from '@components/ImageMagick/options';
 import { ImageMagickRequest, ImageMagickResponse } from '@interfaces/requests';
+
+import { OptionString } from '@components/ImageMagick/options';
 
 import { FLASK_URL } from '@utils/constants';
 
-export async function getConvertedImage(b64Image: string, opts: OptionString): Promise<ImageMagickResponse> {
+export async function getConvertedImage(
+  b64Image: string,
+  opts: OptionString
+): Promise<ImageMagickResponse> {
   const { displayName, ...cmd } = opts;
   let reqBody: ImageMagickRequest = { b64Image, ...cmd };
   const options: RequestInit = {
