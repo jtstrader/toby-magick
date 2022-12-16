@@ -131,7 +131,7 @@ export function Wireframe({
   return (
     <div>
       <div className="image-magick-notif" hidden={countdown === 4000}>
-        {formatCountdown()}
+        {`Entering ImageMagick in ${formatCountdown()}`}
       </div>
       <canvas ref={wireframeOutput} id="video-output" />
     </div>

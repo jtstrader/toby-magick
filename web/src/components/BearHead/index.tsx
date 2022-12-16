@@ -81,7 +81,7 @@ export function BearHead({
         }
 
         if (requestAnimationId.current !== null) {
-          requestAnimationFrame(animate);
+          requestAnimationId.current = requestAnimationFrame(animate);
         }
       };
 
@@ -133,7 +133,7 @@ export function BearHead({
   return (
     <div>
       <div className="image-magick-notif" hidden={countdown === 4000}>
-        {formatCountdown()}
+        {`Entering ImageMagick in ${formatCountdown()}`}
       </div>
       <canvas ref={bearHeadOutput} id="video-output"></canvas>
     </div>

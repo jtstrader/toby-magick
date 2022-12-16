@@ -1,0 +1,25 @@
+[tool.poetry]
+name = "toby-magick"
+version = "0.1.0"
+description = "API that takes an image and runs ImageMagick over it to generate images for the Toby Magick project"
+authors = ["Jacob Strader <Jacob.Thomas.Strader@live.mercer.edu>"]
+readme = "README.md"
+packages = [{include = "toby_magick"}]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+Flask = "^2.2.2"
+flask-cors = "^3.0.10"
+
+[tool.poetry.scripts]
+
+[tool.poetry.group.dev.dependencies]
+black = "^22.12.0"
+poethepoet = "^0.16.5"
+
+[tool.poe.tasks]
+format = "black ."
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

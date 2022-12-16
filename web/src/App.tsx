@@ -20,6 +20,7 @@ function App() {
   const detectorRef = useRef<PoseDetector | null>(null);
   const backgroundRef = useRef<HTMLImageElement | null>(null);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const commandRef = useRef<string>();
 
   /**
    * Enter ImageMagick menu and stop state clock.
@@ -34,9 +35,18 @@ function App() {
   };
 
   /**
-   * Exit ImageMagick menu and start state clock.
+   * Exit ImageMagick menu and display effect with the provided command
    */
-  const exitImageMagick = () => setMode(0);
+  const exitImageMagick = () => {
+    setMode(0);
+  };
+
+  /**
+   * Exit EffectDisplay and restart state clock
+   */
+  const exitEffectDisplay = () => {
+    setMode(0);
+  };
 
   const modes: JSX.Element[] = [
     <BearHead

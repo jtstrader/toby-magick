@@ -38,10 +38,11 @@ export const magickReset: MutableRefObject<number | null> = createRef<number>();
  *
  *
  * @param poses Check if any keypoint has a raised hand. If so, decrement `magickTime`. Otherwise, decrement `magickReset`.
+ * @param onlyLeft If set to true, increments clock **only** when the left hand is raised.
  *
  * @returns The new countdown value.
  */
-export const magickCheck = (poses: Pose[]): number => {
+export const magickCheck = (poses: Pose[], onlyLeft: boolean = true): number => {
   if (!magickTime.current || !magickReset.current) {
     log.error('magickCheck status =>', {
       magickTime: magickTime.current,
@@ -59,7 +60,8 @@ export const magickCheck = (poses: Pose[]): number => {
   if (
     poses.some(
       ({ keypoints }) => keypoints[9].y < keypoints[5].y && keypoints[10].y >= keypoints[6].y
-    )
+    ) ||
+    (poses.some(({ keypoints }) => keypoints[9].y < keypoints[5].y) && !onlyLeft)
   ) {
     if (previousHand.current !== null) {
       magickReset.current = 1500;
@@ -107,5 +109,5 @@ export const formatCountdown = (): string => {
     return '';
   }
 
-  return `ImageMagick in ${Math.ceil(countdown.current / 1000)}`;
+  return `${Math.ceil(countdown.current / 1000)}`;
 };

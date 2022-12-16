@@ -1,25 +1,30 @@
 export interface OptionString {
   displayName: string;
-  flag: string;
+  channel?: string;
+  cmd: string;
   cfg?: string | number;
 }
 
 export const optionStrings: OptionString[] = [
   {
     displayName: 'Negate Image',
-    flag: '--negate',
+    channel: '-channel RGB',
+    cmd: '-negate',
   },
   {
     displayName: 'Rotationally Blur Image',
-    flag: '--rotational-blur',
+    cmd: '-rotational-blur',
+    cfg: 5
   },
   {
     displayName: 'Segment Image',
-    flag: '--segment',
+    cmd: '-segment',
+    cfg: 5
   },
   {
     displayName: 'Sepia-Tone Image',
-    flag: 'sepia-tone',
+    cmd: '-sepia-tone',
+    cfg: '75%'
   },
 ];
 

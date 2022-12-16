@@ -22,6 +22,6 @@ export interface StaticBackgroundVideoComponentProps extends GenericVideoCompone
  */
 export interface ImageMagickOptionProps {
   displayName: string;
-  flag: string;
+  cmd: string;
   border: boolean;
 }

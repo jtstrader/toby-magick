@@ -78,7 +78,12 @@ export const MODEL_CONFIG: EnvModelConfig = (() => {
         enableTracking: true,
         trackerType: TrackerType.BoundingBox,
       } as MoveNetModelConfig,
-      default: true,
+      default: process.env.REACT_APP_MODEL !== 'MoveNet',
     };
   }
 })();
+
+/**
+ * Flask API for converting images
+ */
+export const FLASK_URL: string = 'http://127.0.0.1:5000';

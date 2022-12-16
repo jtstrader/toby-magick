@@ -20,6 +20,13 @@
   color: orange;
 }
 
+.image-magick-menu-countdown {
+  padding: 20px;
+  font-size: 40px;
+  font-weight: 700;
+  color: orange;
+}
+
 #image-magick-video-container {
   width: 1280px;
   height: 1080px;
@@ -28,7 +35,13 @@
 }
 
 #image-magick-video-output {
-  width: 1280px;
-  height: 720px;
+  width: 1280px !important;
+  height: 720px !important;
   background-color: #666;
+}
+
+#image-magick-snapshot-output {
+  /* For now, snapshot image at 75% of video output */
+  width: 960px;
+  height: 540px;
 }
