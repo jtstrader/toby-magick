@@ -125,6 +125,9 @@ function App() {
     }
   }, [mode, clockStart]);
 
+  /**
+   * Component mounted.
+   */
   useEffect(() => {
     if (timeoutRef.current === null) {
       log.debug('Starting first clock');
@@ -133,13 +136,12 @@ function App() {
         log.error('No valid model provided in .env. Defaulting to MoveNet');
       }
 
-      log.info('Loaded with the following model configuration: ', MODEL_CONFIG!);
-
       (async () => {
         detectorRef.current = await poseDetection.createDetector(
           MODEL_CONFIG.model,
           MODEL_CONFIG.detectorConfig
         );
+        log.info('Loaded with the following model configuration: ', MODEL_CONFIG!);
       })();
 
       (async () => {
