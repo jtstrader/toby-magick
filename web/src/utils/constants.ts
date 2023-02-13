@@ -60,6 +60,7 @@ interface EnvModelConfig {
  */
 export const MODEL_CONFIG: EnvModelConfig = (() => {
   const modelName = process.env.REACT_APP_MODEL;
+  log.fatal(modelName);
   if (modelName === 'PoseNet') {
     return {
       model: SupportedModels.PoseNet,
