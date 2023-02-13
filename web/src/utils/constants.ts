@@ -89,7 +89,7 @@ export const MODEL_CONFIG: EnvModelConfig = (() => {
 export const FLASK_URL: string = 'http://127.0.0.1:5000';
 
 /**
- * To see if the application should have ImageMagick running, default to true
+ * To see if the application should have ImageMagick running, default to false
  */
 export const MAGICK_ENABLED: boolean = (() => {
   let magick = process.env.REACT_APP_MAGICK_ENABLED;
