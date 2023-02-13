@@ -2,7 +2,7 @@ import { GenericVideoComponentProps } from '@interfaces/component-props';
 import { Pose } from '@tensorflow-models/pose-detection';
 import { useEffect, useRef, useState } from 'react';
 
-import { log } from '@utils/constants';
+import { log, MAGICK_ENABLED } from '@utils/constants';
 import { drawBearHead } from '@utils/drawing';
 import { FPSAnalyzer, FPSAnalyzerError } from '@utils/fps';
 import { getPoses } from '@utils/keypoints';
@@ -67,7 +67,9 @@ export function BearHead({
           drawBearHead(ctx, keypoints, tobyHead);
         });
 
-        setCountdown(magickCheck(poses));
+        if (MAGICK_ENABLED) {
+          setCountdown(magickCheck(poses));
+        }
 
         try {
           stats.current?.update();

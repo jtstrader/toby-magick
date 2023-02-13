@@ -60,7 +60,6 @@ interface EnvModelConfig {
  */
 export const MODEL_CONFIG: EnvModelConfig = (() => {
   const modelName = process.env.REACT_APP_MODEL;
-  log.fatal(modelName);
   if (modelName === 'PoseNet') {
     return {
       model: SupportedModels.PoseNet,
@@ -88,3 +87,18 @@ export const MODEL_CONFIG: EnvModelConfig = (() => {
  * Flask API for converting images
  */
 export const FLASK_URL: string = 'http://127.0.0.1:5000';
+
+/**
+ * To see if the application should have ImageMagick running, default to true
+ */
+export const MAGICK_ENABLED: boolean = (() => {
+  let magick = process.env.REACT_APP_MAGICK_ENABLED;
+  if (magick) {
+    try {
+      return parseInt(magick) > 0;
+    } catch (_) {
+      return false;
+    }
+  }
+  return false;
+})();
