@@ -4,6 +4,7 @@ body {
     'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overflow: hidden;
 }
 
 code {
@@ -11,8 +12,8 @@ code {
 }
 
 #video-output {
-  width: 1920px;
-  height: 1080px;
+  width: 100%;
+  height: 100%;
   background-color: #666;
 }
 
