@@ -97,6 +97,7 @@ export const MAGICK_ENABLED: boolean = (() => {
     try {
       return parseInt(magick) > 0;
     } catch (_) {
+      log.error(`Could not not parse environment variable MAGICK_ENABLED: ${magick} provided`);
       return false;
     }
   }
