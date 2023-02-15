@@ -158,8 +158,8 @@ export const drawBearHead = (
 
   ctx.drawImage(
     tobyHead,
-    keypoints[0].x - distance * 1.25,
-    keypoints[0].y - distance * 1.25,
+    keypoints[0].x - distance * 2.5,
+    keypoints[0].y - distance * 2.5,
     distance * 5,
     distance * 5
   );
