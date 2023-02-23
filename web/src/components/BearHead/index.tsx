@@ -2,7 +2,7 @@ import { GenericVideoComponentProps } from '@interfaces/component-props';
 import { Pose } from '@tensorflow-models/pose-detection';
 import { useEffect, useRef, useState } from 'react';
 
-import { log, MAGICK_ENABLED } from '@utils/constants';
+import { log, MAGICK_ENABLED, tobyHead } from '@utils/constants';
 import { drawBearHead } from '@utils/drawing';
 import { FPSAnalyzer, FPSAnalyzerError } from '@utils/fps';
 import { getPoses } from '@utils/keypoints';
@@ -31,11 +31,7 @@ export function BearHead({
   const requestAnimationId = useRef<number | null>(null);
   const stats = useRef<FPSAnalyzer>();
   const [countdown, setCountdown] = useState<number>(4000);
-  const tobyHead: HTMLImageElement = (() => {
-    const img = new Image();
-    img.src = require('@utils/toby.png');
-    return img;
-  })();
+
 
   /**
    * Start the animation frames

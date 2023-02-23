@@ -16,6 +16,15 @@ import { Logger } from 'tslog';
 export const MODE_SWITCH_DELAY = 10_000;
 
 /**
+ * TobyHead to be displayed in the BearHead component. Should only be loaded once.
+ */
+export const tobyHead: HTMLImageElement = (() => {
+  const img = new Image();
+  img.src = require('@utils/toby.png');
+  return img;
+})();
+
+/**
  * Custom logger for debugging.
  */
 export const log = new Logger({
