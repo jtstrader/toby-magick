@@ -26,13 +26,13 @@ while ($true) {
     if ([console]::KeyAvailable) {
         $key = [system.console]::readkey($true)
         if (($key.modifiers -band [consolemodifiers]"control") -and ($key.key -eq "C")) {
+            Write-Output "`ntoby-magick: Ending jobs: [WEB, API, CHROME]"
+            
             # WEB/API
-            Write-Output "`ntoby-magick: Ending current jobs WEB and API..."
             Get-Job | Stop-Job
             Get-Job | Remove-Job
 
             # CHROME
-            Write-Output "toby-magick: Killing chrome window..."
             Stop-Process -Name chrome
             break
         }
