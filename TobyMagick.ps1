@@ -1,3 +1,6 @@
+# Navigate to the script root in the case that the script was called from a symlink
+cd $PSScriptRoot
+
 $Rebuild = $(git status --porcelain | Measure-Object | Select-Object -expand Count) -gt 0
 if ($Rebuild) {
     Set-Location .\web
@@ -18,7 +21,7 @@ Start-Job -Name WEB -ScriptBlock { Set-Location $using:ROOT\web; yarn serve -s b
 Start-Job -Name API -ScriptBlock { Set-Location $using:ROOT\api; Write-Output "In api dir!"; }
 
 # Once jobs are started, load into the chrome page.
-Start-Job -Name CHROME -ScriptBlock { Start "C:\Program Files (x86)\Google\Chrome\Application\chrome.exe" '--start-fullscreen "http://localhost:3000"'; }
+Start-Job -Name CHROME -ScriptBlock { Start "C:\Program Files\Google\Chrome\Application\chrome.exe" '--start-fullscreen "http://localhost:3000"'; }
 
 # CTRL-C Signal
 [console]::TreatControlCAsInput = $true
